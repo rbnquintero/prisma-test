@@ -1,0 +1,12 @@
+[build]
+  command = "yarn prod"
+  publish = ".next"
+  functions = "lambda"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/lambda/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

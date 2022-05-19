@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model SPXUser {
+  username  String  @id @unique
+  password  String
+}
+
+model SPXHost {
+  username       String       @id @unique
+  name           String
+  lastname       String
+  status         String
+  SPXReservation SPXSession[]
+}
+
+model SPXGuest {
+  username       String       @id @unique
+  name           String
+  lastname       String
+  status         String
+  bigcommerceId  Int          @default(3)
+  SPXReservation SPXSession[]
+}
+
+model SPXSession {
+  id             String               @id
+  host           SPXHost              @relation(fields: [hostId], references: [username])
+  hostId         String
+  guest          SPXGuest             @relation(fields: [guestId], references: [username])
+  guestId        String
+  start          DateTime
+  end            DateTime?
+  status         String
+  viewedProducts SPXSessionProduct[]
+  wishList       SPXSessionWishlist[]
+  cart           SPXSessionCart[]
+  review         SPXSessionReview?
+  bigcommerceCartId String?
+  videoSession   SPXVideoSession?
+}
+
+model SPXSessionProduct {
+  id          Int        @id @default(sequence())
+  sessionId   String
+  session     SPXSession @relation(fields: [sessionId], references: [id])
+  date        DateTime
+  productId   String
+  productName String
+  productUrl  String
+}
+
+model SPXSessionWishlist {
+  id          Int        @id @default(sequence())
+  sessionId   String
+  session     SPXSession @relation(fields: [sessionId], references: [id])
+  date        DateTime
+  productId   String
+  productName String
+  productUrl  String
+  quantity    Int
+}
+
+model SPXSessionCart {
+  id          Int        @id @default(sequence())
+  sessionId   String
+  session     SPXSession @relation(fields: [sessionId], references: [id])
+  date        DateTime
+  productId   String
+  productName String
+  productUrl  String
+  quantity    Int
+}
+
+model SPXSessionReview {
+  id        Int        @id @default(sequence())
+  sessionId String     @unique
+  session   SPXSession @relation(fields: [sessionId], references: [id])
+  date      DateTime
+  stars     Int
+  comment   String
+}
+
+model SPXVideoSession {
+  roomId     String   @id @unique
+  roomUrl    String
+  sessionId  String
+  session    SPXSession @relation(fields: [sessionId], references: [id])
+  createdAt  DateTime
+}

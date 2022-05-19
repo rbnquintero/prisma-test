@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "SPXSession" ALTER COLUMN "end" DROP NOT NULL;
